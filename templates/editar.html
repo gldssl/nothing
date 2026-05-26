@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Detento</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+        .btn-voltar { background-color: #6c757d; margin-top: 10px; display: block; text-align: center; color: white; text-decoration: none; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Editar Registro</h2>
+        <form action="/editar/{{ pessoa.id }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" name="nome" value="{{ pessoa.nome }}" required>
+            </div>
+            <div class="form-group">
+                <label>Unidade / Documento:</label>
+                <input type="text" name="documento" value="{{ pessoa.documento }}">
+            </div>
+            <div class="form-group">
+                <label>Número do Prontuário:</label>
+                <input type="text" name="numero_prontuario" value="{{ pessoa.numero_prontuario }}">
+            </div>
+            <div class="form-group">
+                <label>Familiar de Contato:</label>
+                <input type="text" name="familiar" value="{{ pessoa.familiar }}">
+            </div>
+            <div class="form-group">
+                <label>Motivo da Prisão / Regime:</label>
+                <input type="text" name="motivo_prisao" value="{{ pessoa.motivo_prisao }}">
+            </div>
+            <div class="form-group">
+                <label>Facção:</label>
+                <input type="text" name="faccao" value="{{ pessoa.faccao }}">
+            </div>
+            <div class="form-group">
+                <label>Cela / Bloco:</label>
+                <input type="text" name="cela_bloco" value="{{ pessoa.cela_bloco }}">
+            </div>
+            <div class="form-group">
+                <label>Observações / Prontuário Médico:</label>
+                <textarea name="prontuario_medico" rows="3">{{ pessoa.prontuario_medico }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Alterar Foto:</label>
+                <input type="file" name="foto">
+            </div>
+            <button type="submit" class="btn">Salvar Alterações</button>
+            <a href="/painel" class="btn-voltar">Voltar ao Painel</a>
+        </form>
+    </div>
+</body>
+</html>

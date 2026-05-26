@@ -1,68 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Registrar Prontuário</title>
+    <title>Novo Registro</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #1a1a24; color: #fff; padding: 40px 20px; display: flex; justify-content: center; }
-        .form-box { background: #252532; padding: 40px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.3); width: 550px; }
-        h2 { margin-top: 0; color: #2ed573; text-transform: uppercase; text-align: center; font-size: 22px; }
-        .secao-titulo { color: #ff4757; font-size: 14px; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold; }
-        label { font-weight: bold; color: #a4b0be; font-size: 13px; display: block; margin-top: 12px; }
-        input[type="text"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #444; background: #1a1a24; color: white; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        textarea { height: 70px; resize: none; }
-        .botoes { display: flex; gap: 10px; margin-top: 25px; }
-        button { flex: 1; padding: 12px; background-color: #2ed573; border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background-color: #26af5f; }
-        .btn-voltar { flex: 1; padding: 12px; background-color: #747d8c; color: white; border-radius: 6px; text-decoration: none; text-align: center; font-size: 16px; font-weight: bold; display: flex; justify-content: center; align-items: center; }
-        .btn-voltar:hover { background-color: #57606f; }
-        .sucesso { color: #155724; background-color: #d4edda; padding: 10px; border-radius: 4px; text-align: center; font-size: 14px; margin-bottom: 15px; }
+        body { background: #0f1015; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 40px 20px;}
+        .form-box { background: #1e1e28; padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; border: 1px solid #2d2d3a; }
+        h2 { margin-top: 0; color: #4f46e5; text-align: center;}
+        
+        .grupo { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; background: #1a1b23; border: 1px solid #333; border-radius: 6px; color: white; box-sizing: border-box; outline: none;}
+        input:focus { border-color: #4f46e5; }
+        
+        .upload-file { padding: 10px; border: 1px dashed #4f46e5; background: rgba(79, 70, 229, 0.1); cursor: pointer; text-align: center; border-radius: 6px;}
+        
+        button { width: 100%; padding: 15px; background: #4f46e5; border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px;}
+        button:hover { background: #4338ca; }
     </style>
 </head>
 <body>
 
 <div class="form-box">
-    <h2>Abertura de Prontuário Oficial</h2>
+    <h2>Registrar Detento</h2>
     
-    {% if sucesso %}
-        <div class="sucesso">Prontuário registrado e criptografado no sistema!</div>
-    {% endif %}
-
-    <form action="/cadastrar" method="POST">
+    <form action="/cadastrar" method="POST" enctype="multipart/form-data" onsubmit="return bloquearNomesFalsos(event)">
         
-        <div class="secao-titulo">1. Identificação Civil</div>
-        <label>Nome Completo do Interno:</label>
-        <input type="text" name="nome" placeholder="Ex: João da Silva" required autocomplete="off">
-        
-        <label>Documento de Identidade (RG/CPF):</label>
-        <input type="text" name="documento" placeholder="Ex: 000.000.000-00" required>
-        
-        <label>URL da Imagem de Identificação:</label>
-        <input type="text" name="foto_url" placeholder="Link da foto na internet" required>
-
-        <label>Familiar Próximo / Contato de Emergência:</label>
-        <input type="text" name="familiar" placeholder="Ex: Maria da Silva (Mãe)" required>
-        
-        <div class="secao-titulo">2. Informações Prisionais</div>
-        <label>Motivo da Prisão (Artigo / Infração):</label>
-        <input type="text" name="motivo_prisao" placeholder="Ex: Artigo 157 - Roubo" required>
-        
-        <label>Facção / Organização Vinculada:</label>
-        <input type="text" name="faccao" placeholder="Ex: Nenhuma / Comando X" required>
-        
-        <label>Alocação Física (Bloco e Cela):</label>
-        <input type="text" name="cela_bloco" placeholder="Ex: Bloco C - Cela 09" required>
-
-        <div class="secao-titulo">3. Prontuário de Saúde</div>
-        <label>Histórico Clínico (Doenças, Alergias, Tipo Sanguíneo):</label>
-        <textarea name="prontuario_medico" placeholder="Ex: Diabético, Alérgico a Penicilina, Sangue O-" required></textarea>
-        
-        <div class="botoes">
-            <a href="/painel" class="btn-voltar">Voltar</a>
-            <button type="submit">Salvar Prontuário</button>
+        <div class="grupo">
+            <label>Selecione a Foto (.jpg, .png)</label>
+            <input type="file" name="foto" class="upload-file" accept=".jpg, .jpeg, .png" required>
         </div>
+
+        <div class="grupo">
+            <label>Nome Completo (Apenas Letras)</label>
+            <input type="text" id="nome" name="nome" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$" title="Números não são permitidos no nome" required autocomplete="off">
+        </div>
+
+        <div class="grupo" style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>Nº do Prontuário</label>
+                <input type="text" name="numero_prontuario" pattern="\d+" title="Apenas números permitidos" required>
+            </div>
+            <div style="flex: 1;">
+                <label>Unidade Prisional de Origem</label>
+                <input type="text" name="documento" required>
+            </div>
+        </div>
+
+        <div class="grupo"><label>Familiar Próximo</label><input type="text" name="familiar"></div>
+        <div class="grupo"><label>Motivo da Prisão</label><input type="text" name="motivo_prisao"></div>
+        <div class="grupo" style="display: flex; gap: 10px;">
+            <div style="flex: 1;"><label>Facção</label><input type="text" name="faccao"></div>
+            <div style="flex: 1;"><label>Cela/Bloco</label><input type="text" name="cela_bloco"></div>
+        </div>
+        <div class="grupo"><label>Informações Médicas</label><input type="text" name="prontuario_medico"></div>
+
+        <button type="submit">Salvar Registro</button>
+        <a href="/painel" style="display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 14px;">Cancelar</a>
     </form>
 </div>
+
+<script>
+    function bloquearNomesFalsos(event) {
+        const nome = document.getElementById("nome").value;
+        const regexVogais = /[aeiouAEIOUáéíóúãõâêîôû]/;
+        
+        if (!regexVogais.test(nome)) {
+            alert("Nome inválido! Por favor, insira um nome real.");
+            event.preventDefault(); 
+            return false;
+        }
+    }
+</script>
 
 </body>
 </html>

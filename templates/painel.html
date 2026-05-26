@@ -2,72 +2,79 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel de Monitoramento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel</title>
     <style>
-        .card-preso:hover { transform: scale(1.02); }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background-color: #1a1a24; color: #fff; }
-        .container { max-width: 1000px; margin: auto; background: #252532; padding: 30px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.3); }
-        h2 { margin-top: 0; color: #ff4757; text-transform: uppercase; letter-spacing: 1px; }
+        body { background: #0f1015; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 30px; }
+        .container { max-width: 1100px; margin: 0 auto; }
         
-        .topo-acoes { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; }
-        .busca-container { display: flex; flex: 1; }
-        .busca-container input { flex: 1; padding: 12px; border: 1px solid #444; background: #1a1a24; color: white; border-radius: 6px 0 0 6px; font-size: 16px; }
-        .busca-container button { padding: 12px 24px; background-color: #ff4757; color: white; border: none; border-radius: 0 6px 6px 0; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .busca-container button:hover { background-color: #e84118; }
+        .topo { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 15px;}
+        .busca { display: flex; flex: 1; max-width: 400px; background: #1e1e28; border-radius: 8px; border: 1px solid #333; overflow: hidden; }
+        .busca input { background: transparent; border: none; color: white; padding: 12px; width: 100%; outline: none; }
+        .busca button { background: transparent; border: none; color: #4f46e5; padding: 0 15px; cursor: pointer; font-weight: bold;}
         
-        .btn-cadastrar { padding: 12px 20px; background-color: #2ed573; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; text-align: center; white-space: nowrap; }
-        .btn-cadastrar:hover { background-color: #26af5f; }
-
-        /* O GRID QUE COLOCA DOIS NA ESQUERDA E DOIS NA DIREITA */
-        .grid-presos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 25px; }
+        .ferramentas { display: flex; gap: 10px; }
+        .btn { padding: 10px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; font-size: 14px;}
+        .btn-acao { background: #2d2d3a; color: #a1a1aa; }
+        .btn-acao:hover { background: #3f3f5a; color: white; }
+        .btn-novo { background: #4f46e5; color: white; }
         
-        /* ESTILO DO CARD DO PRESO */
-        .card-preso { background: #1e1e28; border-left: 5px solid #ff4757; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .card-preso img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; border: 2px solid #444; background-color: #333; }
-        .info-preso { display: flex; flex-direction: column; }
-        .info-preso .nome { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 5px; }
-        .info-preso .doc { font-size: 14px; color: #a4b0be; }
-
-        .sem-resultados { grid-column: span 2; text-align: center; color: #888; padding: 40px; font-size: 16px; }
-        .logout { display: inline-block; margin-top: 30px; color: #747d8c; text-decoration: none; font-weight: bold; }
-        .logout:hover { color: #ff4757; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: #1a1b23; border: 1px solid #2d2d3a; border-radius: 12px; padding: 20px; display: flex; gap: 15px; align-items: center; position: relative; transition: 0.2s; cursor: pointer;}
+        .card:hover { transform: translateY(-3px); border-color: #4f46e5; }
+        .card img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 2px solid #4f46e5; }
+        
+        .info { flex: 1; }
+        .info h3 { margin: 0 0 5px 0; font-size: 16px; color: #fff; line-height: 1.2; padding-right: 45px; }
+        .info p { margin: 2px 0; font-size: 13px; color: #888; }
+        .prontuario { color: #ff4757 !important; font-weight: bold; }
+        
+        .acoes-card { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; align-items: center; z-index: 10; }
+        
+        .btn-lixeira, .btn-editar { background: transparent; border: none; font-size: 16px; cursor: pointer; opacity: 0.3; transition: 0.2s; text-decoration: none; padding: 0; }
+        .card:hover .btn-lixeira, .card:hover .btn-editar { opacity: 1; }
+        .btn-editar:hover { transform: scale(1.15); }
+        .btn-lixeira:hover { transform: scale(1.15); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Sistema de Consulta Criminal</h2>
-    <p style="color: #a4b0be;">Pesquise pelo nome completo ou parcial para filtrar os registros armazenados.</p>
-    
-    <div class="topo-acoes">
-        <form action="/painel" method="GET" class="busca-container">
-            <input type="text" name="pesquisa" placeholder="Digite o nome para buscar..." value="{{ termo }}">
-            <button type="submit">Pesquisar</button>
+    <div class="topo">
+        <form action="/painel" method="GET" class="busca">
+            <input type="text" name="pesquisa" placeholder="Buscar prontuário, nome...">
+            <button type="submit">🔍</button>
         </form>
         
-        <a href="/cadastrar" class="btn-cadastrar">+ Registrar Novo</a>
+        <div class="ferramentas">
+            <form action="/importar" method="POST" enctype="multipart/form-data" id="formImport" style="display: none;">
+                <input type="file" id="arquivoExcel" name="planilha" accept=".xlsx, .xls" onchange="document.getElementById('formImport').submit()">
+            </form>
+            <button class="btn btn-acao" onclick="document.getElementById('arquivoExcel').click()">📥 Importar</button>
+            <a href="/exportar" class="btn btn-acao">📤 Exportar</a>
+            <a href="/cadastrar" class="btn btn-novo">+ Novo Registro</a>
+        </div>
     </div>
 
-    <div class="grid-presos">
-        {% for pessoa in pessoas %}
-        
-        <a href="/detalhes/{{ pessoa[0] }}" style="text-decoration: none; color: inherit;">
-            <div class="card-preso" style="cursor: pointer; transition: transform 0.2s;">
-                <img src="{{ pessoa[3] }}" alt="Foto de Identificação">
-                <div class="info-preso">
-                    <div class="nome">{{ pessoa[1] }}</div>
-                    <div class="doc"><strong>Documento:</strong> {{ pessoa[2] }}</div>
-                    <div class="doc" style="margin-top: 5px; font-size: 12px; color: #ff4757;">ID Sistema: #00{{ pessoa[0] }}</div>
-                </div>
+    <div class="grid">
+        {% for p in pessoas %}
+        <div class="card" onclick="window.location.href='/detalhes/{{ p.id }}'">
+            <img src="{{ p.foto_url }}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'" alt="Foto">
+            <div class="info">
+                <h3>{{ p.nome }}</h3>
+                <p>Unidade: {{ p.documento }}</p>
+                <p class="prontuario">Prontuário: #{{ p.numero_prontuario }}</p>
             </div>
-        </a>
-        {% else %}
-        <div class="sem-resultados">Nenhum registro correspondente encontrado no banco de dados.</div>
+            
+            <div class="acoes-card">
+                <a href="/editar/{{ p.id }}" class="btn-editar" onclick="event.stopPropagation()">✏️</a>
+                <form action="/excluir/{{ p.id }}" method="POST" onsubmit="return confirm('Excluir?')" onclick="event.stopPropagation()" style="display:inline;">
+                    <button type="submit" class="btn-lixeira">🗑️</button>
+                </form>
+            </div>
+        </div>
         {% endfor %}
     </div>
-    
-    <br>
-    <a href="/login" class="logout">← Sair do Sistema</a>
 </div>
 
 </body>

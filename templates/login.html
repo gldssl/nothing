@@ -1,36 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Acesso ao Sistema</title>
+    <title>Acesso Restrito</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #eef2f3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0px 4px 20px rgba(0,0,0,0.08); width: 320px; }
-        h2 { text-align: center; color: #333; margin-bottom: 24px; }
-        label { font-weight: bold; color: #555; font-size: 14px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin: 8px 0 20px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 12px; background-color: #0056b3; border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background-color: #004085; }
-        .erro { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 4px; text-align: center; font-size: 14px; margin-bottom: 15px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1015; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white;}
+        .login-box { background: #1e1e28; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 320px; text-align: center; border: 1px solid #2d2d3a; }
+        
+        /* O MASCOTE (ESTILO STAN) */
+        .avatar { width: 100px; height: 100px; background: #f1c27d; border-radius: 50% 50% 35% 35%; margin: -80px auto 20px auto; position: relative; border: 4px solid #2d3436; transition: 0.3s; z-index: 5;}
+        .oculos { position: absolute; top: 25px; left: 8px; width: 75px; height: 26px; border: 4px solid #2d3436; border-radius: 8px; z-index: 2;}
+        .oculos::after { content: ''; position: absolute; width: 10px; height: 4px; background: #2d3436; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        .olho { width: 14px; height: 14px; background: white; border: 3px solid #2d3436; border-radius: 50%; position: absolute; top: 30px; overflow: hidden; z-index: 1;}
+        .olho.esq { left: 16px; } .olho.dir { right: 16px; }
+        .pupila { width: 6px; height: 6px; background: #2d3436; border-radius: 50%; position: absolute; top: 4px; left: 4px; transition: 0.1s; }
+        .boca { width: 20px; height: 6px; border-bottom: 3px solid #2d3436; border-radius: 0 0 10px 10px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); transition: 0.3s; }
+        
+        .mao { width: 28px; height: 28px; background: #f1c27d; border: 3px solid #2d3436; border-radius: 50%; position: absolute; bottom: -15px; transition: 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 10; }
+        .mao.esq { left: -10px; } .mao.dir { right: -10px; }
+
+        /* REAÇÕES DO MASCOTE */
+        body.senha .mao.esq { transform: translate(25px, -55px); }
+        body.senha .mao.dir { transform: translate(-25px, -55px); }
+        body.senha .boca { width: 10px; height: 4px; border-radius: 50%; border-bottom: none; border-top: 3px solid #2d3436; }
+        
+        /* NOVA ANIMAÇÃO: ESPIADINHA */
+        body.espiadinha .mao.esq { transform: translate(10px, -45px); } /* Afasta a mão esquerda levemente */
+        
+        /* NOVA ANIMAÇÃO: RISADA DE ERRO */
+        @keyframes risada {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-3px); }
+            50% { transform: translateY(3px); }
+            75% { transform: translateY(-3px); }
+        }
+        body.erro .avatar { background: #ff7675; animation: risada 0.15s infinite; }
+        body.erro .boca { border-bottom: 6px solid #2d3436; border-top: none; border-radius: 0 0 10px 10px; height: 10px; width: 26px; }
+
+        input { width: 100%; padding: 12px; margin: 10px 0 20px; background: #1a1b23; border: 1px solid #444; border-radius: 6px; color: white; box-sizing: border-box; outline: none; transition: 0.3s;}
+        input:focus { border-color: #4f46e5; }
+        button { width: 100%; padding: 12px; background: #4f46e5; border: none; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
+        button:hover { background: #4338ca; }
+        .msg-erro { color: #ff7675; font-size: 14px; margin-bottom: 15px; }
     </style>
 </head>
-<body>
+<body id="body" class="{% if erro %}erro{% endif %}">
 
 <div class="login-box">
-    <h2>Acesso Restrito</h2>
-    {% if erro %}
-        <div class="erro">{{ erro }}</div>
-    {% endif %}
+    <div class="avatar">
+        <div class="oculos"></div>
+        <div class="olho esq"><div class="pupila"></div></div>
+        <div class="olho dir"><div class="pupila"></div></div>
+        <div class="boca"></div>
+        <div class="mao esq"></div>
+        <div class="mao dir"></div>
+    </div>
+    
+    <h2>Acesso ao Painel</h2>
+    {% if erro %}<div class="msg-erro">⚠️ {{ erro }}</div>{% endif %}
+
     <form action="/login" method="POST">
-        <label>Usuário:</label>
-        <input type="text" name="usuario" required autocomplete="off">
-        
-        <label>Senha:</label>
-        <input type="password" name="senha" required>
-        
-        <button type="submit">Entrar no Painel</button>
+        <input type="text" name="usuario" placeholder="Usuário" required autocomplete="off">
+        <input type="password" name="senha" id="input-senha" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
     </form>
 </div>
 
+<script>
+    // Olhos seguindo o mouse perfeitamente
+    document.addEventListener("mousemove", (e) => {
+        // Se estiver com as mãos nos olhos (senha) MAS não estiver espiando, os olhos ficam parados. 
+        // Se der espiadinha, o olho liberado vai acompanhar o mouse!
+        if(document.body.classList.contains('senha') && !document.body.classList.contains('espiadinha')) return;
+        document.querySelectorAll(".pupila").forEach(pupila => {
+            const rect = pupila.parentElement.getBoundingClientRect();
+            const x = (e.clientX - rect.left - rect.width/2) / 10;
+            const y = (e.clientY - rect.top - rect.height/2) / 10;
+            pupila.style.transform = `translate(${Math.max(-3, Math.min(3, x))}px, ${Math.max(-3, Math.min(3, y))}px)`;
+        });
+    });
+    
+    let timerEspiadinha;
+    const inputSenha = document.getElementById("input-senha");
+
+    // Tapa os olhos quando foca na senha, e prepara a espiadinha após 3 segundos
+    inputSenha.addEventListener("focus", () => {
+        document.body.classList.add("senha");
+        timerEspiadinha = setTimeout(() => {
+            document.body.classList.add("espiadinha");
+        }, 3000);
+    });
+
+    inputSenha.addEventListener("blur", () => {
+        document.body.classList.remove("senha");
+        document.body.classList.remove("espiadinha");
+        clearTimeout(timerEspiadinha);
+    });
+
+    // Se o usuário voltar a digitar, a espiadinha reseta (ele fecha o olho de novo)
+    inputSenha.addEventListener("input", () => {
+        clearTimeout(timerEspiadinha);
+        document.body.classList.remove("espiadinha");
+        timerEspiadinha = setTimeout(() => {
+            document.body.classList.add("espiadinha");
+        }, 3000);
+    });
+
+    // Para a animação de risada (erro) após 1 segundo cravado
+    if(document.body.classList.contains('erro')) {
+        setTimeout(() => {
+            document.body.classList.remove('erro');
+        }, 1000);
+    }
+</script>
 </body>
 </html>
