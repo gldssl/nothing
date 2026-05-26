@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Monitoramento</title>
+    <style>
+        .card-preso:hover { transform: scale(1.02); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background-color: #1a1a24; color: #fff; }
+        .container { max-width: 1000px; margin: auto; background: #252532; padding: 30px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.3); }
+        h2 { margin-top: 0; color: #ff4757; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .topo-acoes { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; }
+        .busca-container { display: flex; flex: 1; }
+        .busca-container input { flex: 1; padding: 12px; border: 1px solid #444; background: #1a1a24; color: white; border-radius: 6px 0 0 6px; font-size: 16px; }
+        .busca-container button { padding: 12px 24px; background-color: #ff4757; color: white; border: none; border-radius: 0 6px 6px 0; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .busca-container button:hover { background-color: #e84118; }
+        
+        .btn-cadastrar { padding: 12px 20px; background-color: #2ed573; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; text-align: center; white-space: nowrap; }
+        .btn-cadastrar:hover { background-color: #26af5f; }
+
+        /* O GRID QUE COLOCA DOIS NA ESQUERDA E DOIS NA DIREITA */
+        .grid-presos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 25px; }
+        
+        /* ESTILO DO CARD DO PRESO */
+        .card-preso { background: #1e1e28; border-left: 5px solid #ff4757; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .card-preso img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; border: 2px solid #444; background-color: #333; }
+        .info-preso { display: flex; flex-direction: column; }
+        .info-preso .nome { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .info-preso .doc { font-size: 14px; color: #a4b0be; }
+
+        .sem-resultados { grid-column: span 2; text-align: center; color: #888; padding: 40px; font-size: 16px; }
+        .logout { display: inline-block; margin-top: 30px; color: #747d8c; text-decoration: none; font-weight: bold; }
+        .logout:hover { color: #ff4757; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Sistema de Consulta Criminal</h2>
+    <p style="color: #a4b0be;">Pesquise pelo nome completo ou parcial para filtrar os registros armazenados.</p>
+    
+    <div class="topo-acoes">
+        <form action="/painel" method="GET" class="busca-container">
+            <input type="text" name="pesquisa" placeholder="Digite o nome para buscar..." value="{{ termo }}">
+            <button type="submit">Pesquisar</button>
+        </form>
+        
+        <a href="/cadastrar" class="btn-cadastrar">+ Registrar Novo</a>
+    </div>
+
+    <div class="grid-presos">
+        {% for pessoa in pessoas %}
+        
+        <a href="/detalhes/{{ pessoa[0] }}" style="text-decoration: none; color: inherit;">
+            <div class="card-preso" style="cursor: pointer; transition: transform 0.2s;">
+                <img src="{{ pessoa[3] }}" alt="Foto de Identificação">
+                <div class="info-preso">
+                    <div class="nome">{{ pessoa[1] }}</div>
+                    <div class="doc"><strong>Documento:</strong> {{ pessoa[2] }}</div>
+                    <div class="doc" style="margin-top: 5px; font-size: 12px; color: #ff4757;">ID Sistema: #00{{ pessoa[0] }}</div>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="sem-resultados">Nenhum registro correspondente encontrado no banco de dados.</div>
+        {% endfor %}
+    </div>
+    
+    <br>
+    <a href="/login" class="logout">← Sair do Sistema</a>
+</div>
+
+</body>
+</html>

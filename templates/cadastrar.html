@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Prontuário</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #1a1a24; color: #fff; padding: 40px 20px; display: flex; justify-content: center; }
+        .form-box { background: #252532; padding: 40px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.3); width: 550px; }
+        h2 { margin-top: 0; color: #2ed573; text-transform: uppercase; text-align: center; font-size: 22px; }
+        .secao-titulo { color: #ff4757; font-size: 14px; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold; }
+        label { font-weight: bold; color: #a4b0be; font-size: 13px; display: block; margin-top: 12px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #444; background: #1a1a24; color: white; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 70px; resize: none; }
+        .botoes { display: flex; gap: 10px; margin-top: 25px; }
+        button { flex: 1; padding: 12px; background-color: #2ed573; border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background-color: #26af5f; }
+        .btn-voltar { flex: 1; padding: 12px; background-color: #747d8c; color: white; border-radius: 6px; text-decoration: none; text-align: center; font-size: 16px; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+        .btn-voltar:hover { background-color: #57606f; }
+        .sucesso { color: #155724; background-color: #d4edda; padding: 10px; border-radius: 4px; text-align: center; font-size: 14px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="form-box">
+    <h2>Abertura de Prontuário Oficial</h2>
+    
+    {% if sucesso %}
+        <div class="sucesso">Prontuário registrado e criptografado no sistema!</div>
+    {% endif %}
+
+    <form action="/cadastrar" method="POST">
+        
+        <div class="secao-titulo">1. Identificação Civil</div>
+        <label>Nome Completo do Interno:</label>
+        <input type="text" name="nome" placeholder="Ex: João da Silva" required autocomplete="off">
+        
+        <label>Documento de Identidade (RG/CPF):</label>
+        <input type="text" name="documento" placeholder="Ex: 000.000.000-00" required>
+        
+        <label>URL da Imagem de Identificação:</label>
+        <input type="text" name="foto_url" placeholder="Link da foto na internet" required>
+
+        <label>Familiar Próximo / Contato de Emergência:</label>
+        <input type="text" name="familiar" placeholder="Ex: Maria da Silva (Mãe)" required>
+        
+        <div class="secao-titulo">2. Informações Prisionais</div>
+        <label>Motivo da Prisão (Artigo / Infração):</label>
+        <input type="text" name="motivo_prisao" placeholder="Ex: Artigo 157 - Roubo" required>
+        
+        <label>Facção / Organização Vinculada:</label>
+        <input type="text" name="faccao" placeholder="Ex: Nenhuma / Comando X" required>
+        
+        <label>Alocação Física (Bloco e Cela):</label>
+        <input type="text" name="cela_bloco" placeholder="Ex: Bloco C - Cela 09" required>
+
+        <div class="secao-titulo">3. Prontuário de Saúde</div>
+        <label>Histórico Clínico (Doenças, Alergias, Tipo Sanguíneo):</label>
+        <textarea name="prontuario_medico" placeholder="Ex: Diabético, Alérgico a Penicilina, Sangue O-" required></textarea>
+        
+        <div class="botoes">
+            <a href="/painel" class="btn-voltar">Voltar</a>
+            <button type="submit">Salvar Prontuário</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
